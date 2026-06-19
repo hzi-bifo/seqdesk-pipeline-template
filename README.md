@@ -63,14 +63,25 @@ A contributed pipeline must satisfy all of the following:
 
 1. **Nextflow only.** `execution.type` must be `"nextflow"` — it is the only
    supported engine.
-2. **Ships a minimal `test-data/` fixture.** The package must include a tiny
-   dummy fixture so CI can run the pipeline end-to-end on dummy data. See
-   [`test-data/README.md`](test-data/README.md). Keep it small — no real data,
-   no large reference databases.
-3. **Declares a license.** Include a `LICENSE` file. This repo ships a clearly
+2. **Ships a minimal `test-data/` fixture.** Include a tiny dummy fixture (see
+   [`test-data/README.md`](test-data/README.md)) so the pipeline can be run on
+   dummy data. Keep it small — no real data, no large reference databases. The
+   submission PR only validates the package **descriptor**; the maintainers run
+   the pipeline on this fixture during integration and add it to the automated
+   test suite.
+3. **Declares its settings and any reference databases.** Expose user-tunable
+   settings in `registry.json` `configSchema` and map them to Nextflow flags via
+   `manifest.paramMap`. A reference database is just such a setting (a config key
+   mapped to a flag, e.g. `kraken2Db` → `--kraken2db`); a facility supplies the
+   path centrally via admin pipeline settings and the install (config) profile,
+   so document in this README what reference data the facility must provide.
+4. **Declares a license.** Include a `LICENSE` file. This repo ships a clearly
    marked **placeholder** MIT license — **you must set the real license**:
    replace `<YEAR>` and `<COPYRIGHT HOLDER>` in [`LICENSE`](LICENSE), or replace
    the whole file with the license of your choice.
+5. **States how to cite it.** Add a `## Citation` section to this README listing
+   the pipeline's authors and any paper(s) or DOI(s) to cite, so facilities and
+   downstream users credit the original work.
 
 ## How to use this template
 
