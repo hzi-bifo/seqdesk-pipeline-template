@@ -1,0 +1,115 @@
+{
+  "manifestVersion": 1,
+  "package": {
+    "id": "my-pipeline",
+    "name": "My Pipeline",
+    "version": "0.1.0",
+    "description": "TODO: one-line description of what this pipeline does",
+    "website": "https://github.com/my-org/my-pipeline",
+    "provider": "My Organization"
+  },
+  "files": {
+    "definition": "definition.json",
+    "registry": "registry.json",
+    "samplesheet": "samplesheet.yaml",
+    "parsers": [
+      "parsers/my-parser.yaml"
+    ],
+    "readme": "README.md"
+  },
+  "sequencingCompatibility": {
+    "readLengthClass": "short",
+    "readLayouts": ["paired"],
+    "platformFamilies": ["illumina"]
+  },
+  "inputs": [
+    {
+      "id": "paired_reads",
+      "scope": "sample",
+      "source": "sample.reads",
+      "required": true,
+      "filters": {
+        "paired": true
+      }
+    },
+    {
+      "id": "platform",
+      "scope": "order",
+      "source": "order.platform",
+      "required": true,
+      "transform": {
+        "type": "map_value",
+        "mapping": {
+          "illumina": "ILLUMINA",
+          "ILLUMINA": "ILLUMINA",
+          "miseq": "ILLUMINA",
+          "novaseq": "ILLUMINA",
+          "nextseq": "ILLUMINA"
+        }
+      }
+    }
+  ],
+  "execution": {
+    "type": "nextflow",
+    "pipeline": "my-org/my-pipeline",
+    "version": "0.1.0",
+    "profiles": ["conda"],
+    "defaultParams": {},
+    "paramMap": {
+      "minQuality": "--min_quality",
+      "outputFormat": "--output_format"
+    },
+    "paramRules": [
+      {
+        "when": { "outputFormat": "compressed" },
+        "add": [
+          { "flag": "--compression", "value": "gzip" }
+        ]
+      }
+    ]
+  },
+  "outputs": [
+    {
+      "id": "processed_files",
+      "scope": "sample",
+      "destination": "sample_assemblies",
+      "type": "assembly",
+      "fromStep": "processing",
+      "discovery": {
+        "pattern": "output/**/*.processed.fa.gz",
+        "matchSampleBy": "filename"
+      }
+    },
+    {
+      "id": "metrics",
+      "scope": "sample",
+      "destination": "sample_metadata",
+      "type": "qc",
+      "fromStep": "qc",
+      "discovery": {
+        "pattern": "qc/metrics.tsv"
+      },
+      "parsed": {
+        "from": "my_parser",
+        "matchBy": "sample_name",
+        "map": {
+          "quality_score": "quality",
+          "read_count": "reads"
+        }
+      }
+    },
+    {
+      "id": "report",
+      "scope": "study",
+      "destination": "study_report",
+      "type": "report",
+      "fromStep": "reporting",
+      "discovery": {
+        "pattern": "report/summary.html"
+      }
+    }
+  ],
+  "schema_requirements": {
+    "tables": ["Assembly", "PipelineArtifact"]
+  }
+}

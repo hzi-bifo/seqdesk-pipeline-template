@@ -1,0 +1,29 @@
+# Node / tooling
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.npm/
+
+# Nextflow runtime artifacts
+.nextflow/
+.nextflow.log*
+work/
+results/
+output/
+report/
+qc/
+*.trace.txt
+*.timeline.html
+*.report.html
+*.dag.*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Local environment
+.env
+.env.local

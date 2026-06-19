@@ -1,0 +1,74 @@
+{
+  "id": "my-pipeline",
+  "name": "My Pipeline",
+  "description": "TODO: one-line description of what this pipeline does",
+  "category": "analysis",
+  "version": "0.1.0",
+  "website": "https://github.com/my-org/my-pipeline",
+  "requires": {
+    "pairedEndReads": true,
+    "sequencingTechnology": true
+  },
+  "outputs": [
+    {
+      "type": "data",
+      "name": "Processed Files",
+      "description": "Main pipeline output files",
+      "model": "Assembly",
+      "visibility": "both",
+      "downloadable": true
+    },
+    {
+      "type": "report",
+      "name": "Summary Report",
+      "description": "HTML summary report",
+      "visibility": "both",
+      "downloadable": true
+    }
+  ],
+  "visibility": {
+    "showToUser": false,
+    "userCanStart": false
+  },
+  "input": {
+    "supportedScopes": ["study", "samples"],
+    "minSamples": 1,
+    "perSample": {
+      "reads": true,
+      "readMode": "paired_only",
+      "pairedEnd": true
+    }
+  },
+  "sequencingCompatibility": {
+    "readLengthClass": "short",
+    "readLayouts": ["paired"],
+    "platformFamilies": ["illumina"]
+  },
+  "samplesheet": {
+    "format": "csv",
+    "generator": "declarative"
+  },
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "minQuality": {
+        "type": "integer",
+        "title": "Minimum Quality",
+        "description": "Minimum quality score threshold",
+        "minimum": 0,
+        "maximum": 40
+      },
+      "outputFormat": {
+        "type": "string",
+        "title": "Output Format",
+        "description": "Format for output files",
+        "enum": ["standard", "compressed", "both"]
+      }
+    }
+  },
+  "defaultConfig": {
+    "minQuality": 20,
+    "outputFormat": "standard"
+  },
+  "icon": "Beaker"
+}

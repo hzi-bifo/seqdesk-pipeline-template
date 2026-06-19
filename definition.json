@@ -1,0 +1,110 @@
+{
+  "pipeline": "my-pipeline",
+  "name": "My Pipeline",
+  "description": "TODO: describe the pipeline and its DAG",
+  "url": "https://github.com/my-org/my-pipeline",
+  "version": "0.1.0",
+  "minNextflowVersion": "23.04.0",
+  "authors": ["Your Name <your.email@example.com>"],
+  "inputs": [
+    {
+      "id": "reads",
+      "name": "Sequencing Reads",
+      "description": "Paired-end FASTQ files",
+      "fileTypes": ["fastq", "fastq.gz"],
+      "source": "sample.reads",
+      "sourceDescription": "Sample reads from order"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "processed",
+      "name": "Processed Files",
+      "description": "Processed output files",
+      "fromStep": "processing",
+      "fileTypes": ["fasta", "fasta.gz"],
+      "destination": "sample_assemblies",
+      "destinationDescription": "Stored as sample assemblies"
+    },
+    {
+      "id": "report",
+      "name": "Summary Report",
+      "description": "HTML summary report",
+      "fromStep": "reporting",
+      "fileTypes": ["html"],
+      "destination": "study_report",
+      "destinationDescription": "Stored as study report"
+    }
+  ],
+  "steps": [
+    {
+      "id": "input_check",
+      "name": "Input Check",
+      "description": "Validate input files and parameters",
+      "category": "preprocessing",
+      "dependsOn": [],
+      "processMatchers": ["SAMPLESHEET_CHECK", "INPUT_CHECK"],
+      "tools": ["python"],
+      "outputs": ["validated_samplesheet"]
+    },
+    {
+      "id": "processing",
+      "name": "Main Processing",
+      "description": "Core processing step",
+      "category": "processing",
+      "dependsOn": ["input_check"],
+      "processMatchers": ["PROCESS", "MAIN"],
+      "tools": ["my-tool"],
+      "outputs": ["processed_files"]
+    },
+    {
+      "id": "qc",
+      "name": "Quality Metrics",
+      "description": "Compute per-sample quality metrics",
+      "category": "qc",
+      "dependsOn": ["processing"],
+      "processMatchers": ["SEQKIT_STATS", "QC"],
+      "tools": ["seqkit"],
+      "outputs": ["metrics"]
+    },
+    {
+      "id": "reporting",
+      "name": "Report Generation",
+      "description": "Generate summary report",
+      "category": "reporting",
+      "dependsOn": ["qc"],
+      "processMatchers": ["MULTIQC", "REPORT"],
+      "tools": ["multiqc"],
+      "outputs": ["report"]
+    }
+  ],
+  "parameterGroups": [
+    {
+      "name": "Processing Options",
+      "description": "Options for the main processing step",
+      "parameters": [
+        {
+          "name": "minQuality",
+          "type": "integer",
+          "description": "Minimum quality score",
+          "default": 20,
+          "minimum": 0,
+          "maximum": 40
+        }
+      ]
+    },
+    {
+      "name": "Output Options",
+      "description": "Options for output format",
+      "parameters": [
+        {
+          "name": "outputFormat",
+          "type": "string",
+          "description": "Output file format",
+          "default": "standard",
+          "enum": ["standard", "compressed", "both"]
+        }
+      ]
+    }
+  ]
+}
